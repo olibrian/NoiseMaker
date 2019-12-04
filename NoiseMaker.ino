@@ -29,6 +29,9 @@
 // Potentiometer sensor
 #define SENSOR A0
 
+// Speaker on digital pin and ground
+#define SPEAKER 10
+
 #define DEBUG true
 
 // ** Keypad
@@ -36,21 +39,27 @@ const byte ROWS = 4; // Four rows
 const byte COLS = 4; // Four columns
 // Define the Keymap
 char keys[ROWS][COLS] = {
-  {'1', '2', '3', 'a'},
-  {'4', '5', '6', 'b'},
-  {'7', '8', '9', 'c'},
-  {'d', 'p', 'u', 'd'}
+  {'1', '2', '3', '4'},
+  {'5', '6', '7', '8'},
+  {'9', ':', ';', '<'},
+  {'?', '@', 'A', 'B'}
 };
-// Connect keypad ROW0, ROW1, ROW2 and ROW3 to these Arduino pins.
-byte rowPins[ROWS] = { 9, 6, 4, 2 };
-// Connect keypad COL0, COL1 and COL2 to these Arduino pins.
-byte colPins[COLS] = { 10, 8, 5, 3 };
+
+// Connect keypad R1, R2, R3 and R4 to these Arduino pins.
+byte rowPins[ROWS] = { 5, 4, 3, 2 };
+// Connect keypad C1, C2, C3 and C4 to these Arduino pins.
+byte colPins[COLS] = { 6, 7, 8, 9 };
 
 // Create the Keypad
 Keypad kpd = Keypad( makeKeymap(keys), rowPins, colPins, ROWS, COLS );
 
 // ** End keypad
 
+// Keypad layout:
+int keypadlayout[] = {
+  NOTE_C4, NOTE_CS4, NOTE_D4, NOTE_DS4, NOTE_E4, 
+  NOTE_F4, NOTE_FS4, NOTE_G4, NOTE_GS4 
+};
 
 // notes in the melody:
 int melody[] = {
@@ -72,28 +81,34 @@ void loop() {
   int pitch = analogRead(SENSOR);
   pitch = pitch / 180;
 
-  debug("Sensor=" + String(pitch));
-
+//  debug("Sensor=" + String(pitch));
   
+  char key = kpd.getKey();
+  if (key != 0){
+    debug("Key=" + String(keypadlayout[key-48] + pitch));
+    tone(SPEAKER, keypadlayout[key-48]+1, 500 / 4 * pitch);
+  }
   // iterate over the notes of the melody:
-  for (int thisNote = 0; thisNote < 8; thisNote++) {
+/**  for (int thisNote = 0; thisNote < 8; thisNote++) {
 
     // to calculate the note duration, take one second divided by the note type.
     //e.g. quarter note = 1000 / 4, eighth note = 1000/8, etc.
     int noteDuration = 500 / noteDurations[thisNote] * pitch;
-    tone(8, melody[thisNote], noteDuration);
+    tone(SPEAKER, melody[thisNote], noteDuration);
 
     // to distinguish the notes, set a minimum time between them.
     // the note's duration + 30% seems to work well:
     int pauseBetweenNotes = noteDuration * 1.30;
     delay(pauseBetweenNotes);
     // stop the tone playing:
-    noTone(8);
+    noTone(SPEAKER);
 
     
   }
-  delay(400);
+**/
+  delay(10);
 }
+
 
 
 //-------------------------------------------------Debug Functions------------------------------------------------------
