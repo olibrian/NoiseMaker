@@ -26,6 +26,9 @@
 #include <Key.h>
 #include <Keypad.h>
 
+#define XSTR(s) STR(s)
+#define STR(s) #s
+
 // Potentiometer sensor
 #define SENSOR A0
 
@@ -85,8 +88,12 @@ void loop() {
   
   char key = kpd.getKey();
   if (key != 0){
-    debug("Key=" + String(keypadlayout[key-48] + pitch));
-    tone(SPEAKER, keypadlayout[key-48]+1, 500 / 4 * pitch);
+    debug("Key=" + String(keypadlayout[key-48]));
+    debug("Pitch=" + String(pitch));
+    tone(SPEAKER, keypadlayout[key-48], 500 / 4 * pitch);
+    //  debug(String(gettone(key-48, pitch)));
+    //tone(SPEAKER, gtone, 500 / 4 * pitch);
+    
   }
   // iterate over the notes of the melody:
 /**  for (int thisNote = 0; thisNote < 8; thisNote++) {
@@ -107,6 +114,21 @@ void loop() {
   }
 **/
   delay(10);
+}
+
+//-------------------------------------------------Tone Functions------------------------------------------------------
+
+int gettone(int key, int oktave)
+{
+  String base[] = {
+    "NOTE_C", "NOTE_CS", "NOTE_D", "NOTE_DS", "NOTE_E", 
+    "NOTE_F", "NOTE_FS", "NOTE_G", "NOTE_GS" 
+  };
+  String get_tone = base[key] + String(oktave);
+//  debug("Tone: " + String(gettone)));
+//  return base[key] + String(oktave);
+Serial.println("basekey: " + get_tone);
+Serial.println("The value of " + get_tone + " is " XSTR(get_tone));
 }
 
 
