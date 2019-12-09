@@ -82,6 +82,7 @@ int noteDurations[] = {
 
 void setup() {
     Serial.begin(19200);
+    pinMode(LED_BUILTIN, OUTPUT);
     debug("Start NoiseMaker");
 }
 
@@ -90,10 +91,14 @@ void loop() {
   int pitch = analogRead(SENSOR);
   pitch = (pitch+1) * 6 / 900;
 
+  // Internal Led off
+  digitalWrite(LED_BUILTIN, LOW);
+
   char key = kpd.getKey();
   if (key != 0){
     debug("Key=" + String(keypadlayout[pitch][key-48]));
     debug("Pitch=" + String(pitch));
+    digitalWrite(LED_BUILTIN, HIGH);
     tone(SPEAKER, keypadlayout[pitch][key-48], 500 / 4);
     
   }
